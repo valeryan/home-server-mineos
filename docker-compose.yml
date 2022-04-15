@@ -1,0 +1,36 @@
+version: '3'
+services:
+  mineos:
+    build:
+      context: ./docker
+      dockerfile: mineos.dockerfile
+    container_name: mineos
+    restart: unless-stopped
+    volumes:
+      - 'mineos-volume:${DATA_DESTINATION_PATH}'
+    ports:
+      - '25565:25565'
+      - '25566:25566'
+      - '25567:25567'
+      - '8443:8443'
+    environment:
+      - VIRTUAL_PROTO=https
+      - VIRTUAL_PORT=8443
+      - 'VIRTUAL_HOST=${MINEOS_HOST}'
+      - 'VIRTUAL_NETWORK=${PROXY_HOST}'
+      - 'LETSENCRYPT_HOST=${MINEOS_HOST}'
+      - 'LETSENCRYPT_EMAIL=${LE_EMAIL}'
+      - 'USER_NAME=${MINEOS_USER}'
+      - 'USER_PASSWORD=${MINEOS_PASS}'
+    networks:
+      - proxy-net
+volumes:
+  mineos-volume:
+    driver: 'lebokus/bindfs:latest'
+    driver_opts:
+      sourcePath: '$PWD/${DATA_SOURCE_PATH}'
+      map: '${UID}/1000:@${UID}/@1000'
+networks:
+  proxy-net:
+    external:
+      name: home-server_proxy-tier
