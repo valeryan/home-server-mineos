@@ -1,4 +1,4 @@
-version: '3'
+version: '3.9'
 services:
   mineos:
     build:
@@ -24,13 +24,16 @@ services:
       - 'USER_PASSWORD=${MINEOS_PASS}'
     networks:
       - proxy-net
+
 volumes:
   mineos-volume:
-    driver: 'lebokus/bindfs:latest'
+    driver: 'local'
     driver_opts:
-      sourcePath: '$PWD/${DATA_SOURCE_PATH}'
-      map: '${UID}/1000:@${UID}/@1000'
+      type: none
+      device: '${PWD}/${DATA_SOURCE_PATH}'
+      o: bind  
+
 networks:
   proxy-net:
-    external:
-      name: home-server_proxy-tier
+    name: home-server_proxy-tier
+    external: true
